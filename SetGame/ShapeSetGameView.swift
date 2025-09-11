@@ -7,7 +7,9 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct ShapeSetGameView: View {
+    @ObservedObject var shapeSetGame: ShapeSetGame
+    
     var body: some View {
         VStack {
             Image(systemName: "globe")
@@ -17,8 +19,12 @@ struct ContentView: View {
         }
         .padding()
     }
+    
+    init(_ shapeSetGame: ShapeSetGame) {
+        self.shapeSetGame = shapeSetGame
+    }
 }
 
 #Preview {
-    ContentView()
+    ShapeSetGameView(ShapeSetGame())
 }
