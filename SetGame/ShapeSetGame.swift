@@ -11,8 +11,12 @@ class ShapeSetGame: ObservableObject {
     @Published private var setGame: SetGame<String> = initializeNewGame()
     
     // MARK: Computed properties
-    var getCards: [SetGame<String>.Card] {
-        return setGame.cards
+    var getCardsOnBoard: [SetGame<String>.Card] {
+        return setGame.cardsOnBoard
+    }
+    
+    var getCardsOnDeck: [SetGame<String>.Card] {
+        return setGame.cardsOnDeck
     }
     
     static func initializeNewGame() -> SetGame<String> {
@@ -85,5 +89,19 @@ class ShapeSetGame: ObservableObject {
     
     func getCardNumberOfShapes(_ card: SetGame<String>.Card) -> Int {
         return card.numberOfContent
+    }
+    
+    func selectCard(_ card: SetGame<String>.Card) {
+        if card.isSelected {
+            setGame.deselectCard(card)
+        } else {
+            setGame.selectCard(card)
+        }
+    }
+    
+    func dealCards(_ number: Int) {
+        for _ in 0..<number {
+            setGame.dealCard()
+        }
     }
 }

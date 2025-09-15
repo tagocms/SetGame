@@ -30,11 +30,10 @@ struct CardView: View {
     }
     
     var shapes: some View {
-        VStack {
+        VStack(spacing: 12) {
             ForEach(0..<card.numberOfContent, id: \.self) { _ in
                 game.getShapeWithShading(card)
                     .aspectRatio(2/1, contentMode: .fit)
-                    .padding()
             }
         }
         .padding()

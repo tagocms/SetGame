@@ -11,13 +11,21 @@ struct ShapeSetGameView: View {
     @ObservedObject var shapeSetGame: ShapeSetGame
     
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        Button("Deal 3 more cards") {
+            withAnimation {
+                shapeSetGame.dealCards(3)
+            }
+        }
+        ScrollView {
+            cardLayout
         }
         .padding()
+    }
+    
+    var cardLayout: some View {
+        AspectVGrid(shapeSetGame.getCardsOnBoard, aspectRatio: 2/3) { card in
+            CardView(card, for: shapeSetGame)
+        }
     }
     
     init(_ shapeSetGame: ShapeSetGame) {

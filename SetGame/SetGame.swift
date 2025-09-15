@@ -14,8 +14,8 @@ struct SetGame<CardContent: CustomStringConvertible> {
         let shading: String
         let color: String
         let content: CardContent
-        let isSelected: Bool = false
-        let isMatched: Bool = false
+        var isSelected: Bool = false
+        var isMatched: Bool = false
         
         var description: String {
             "Card \(id): \(numberOfContent) \(shading) \(color) \(content) -> Selected: \(isSelected), Matched: \(isMatched)"
@@ -30,14 +30,16 @@ struct SetGame<CardContent: CustomStringConvertible> {
     private let availableShadings: [String]
     private let availableColors: [String]
     private let availableContents: [CardContent]
-    private(set) var cards: [Card]
+    private(set) var cardsOnDeck: [Card]
+    private(set) var cardsOnBoard: [Card]
     
     init(availableNumberOfContent: [Int], availableShadings: [String], availableColors: [String], availableContents: [CardContent]) {
         self.availableNumberOfContent = availableNumberOfContent
         self.availableShadings = availableShadings
         self.availableColors = availableColors
         self.availableContents = availableContents
-        self.cards = []
+        self.cardsOnDeck = []
+        self.cardsOnBoard = []
         
         for numberOfContent in availableNumberOfContent {
             for shading in availableShadings {
@@ -51,12 +53,36 @@ struct SetGame<CardContent: CustomStringConvertible> {
                             content: content,
                         )
                         
-                        cards.append(newCard)
+                        cardsOnDeck.append(newCard)
                     }
                 }
             }
         }
         
-        self.cards.shuffle()
+        self.cardsOnDeck.shuffle()
+        
+        for _ in 0..<12 {
+            dealCard()
+        }
+    }
+    
+    mutating func selectCard(_ card: Card) {
+        if let cardIndex = cardsOnDeck.firstIndex(of: card) {
+            cardsOnDeck[cardIndex].isSelected = true
+            print("Card selected")
+        }
+    }
+    
+    mutating func deselectCard(_ card: Card) {
+        if let cardIndex = cardsOnDeck.firstIndex(of: card) {
+            cardsOnDeck[cardIndex].isSelected = false
+            print("Card deselected")
+        }
+    }
+    
+    mutating func dealCard() {
+        if let lastCard = cardsOnDeck.popLast() {
+            cardsOnBoard.append(lastCard)
+        }
     }
 }
