@@ -37,39 +37,49 @@ class ShapeSetGame: ObservableObject {
         }
     }
     
-    // TODO: Melhorar qual é a shape retornada
-    @ViewBuilder private func getCardShape(_ card: SetGame<String>.Card) -> some View {
-        switch card.content {
-        case "diamond":
-            Diamond()
-        case "squiggle":
-            Rectangle()
-        case "oval":
-            Capsule()
+    @ViewBuilder
+    private func getStyle<S: Shape>(shape: S, shading: String, color: Color) -> some View {
+        let stripePattern = HStack(spacing: 0) {
+            ForEach(0..<21, id: \.self) { num in
+                if num.isMultiple(of: 2) {
+                    color
+                } else {
+                    Color.white
+                }
+            }
+        }
+        
+        switch shading {
+        case "solid":
+            shape
+                .fill(color)
+        case "striped":
+            stripePattern
+                .clipShape(shape)
+                .overlay(shape.stroke(color, lineWidth: 3))
+            
+        case "open":
+            shape
+                .stroke(color, lineWidth: 3)
         default:
-            fatalError("Invalid shape: \(card.content)")
+            shape
         }
     }
     
-    // TODO: Fazer uma função que retorna o shading de cada carta
-    @ViewBuilder func getShapeWithShading(_ card: SetGame<String>.Card) -> some View {
-        let shape = getCardShape(card)
+    @ViewBuilder
+    func getShapeWithShading(_ card: SetGame<String>.Card) -> some View {
+        let shading = card.shading
         let color = getCardColor(card)
         
-        switch card.shading {
-        case "solid":
-            shape
-                .foregroundStyle(color)
-        case "striped":
-            Color.white
-        case "open":
-            shape
-                .overlay(
-                    shape
-                        .stroke(color, lineWidth: 1)
-                )
+        switch card.content {
+        case "diamond":
+            getStyle(shape: Diamond(), shading: shading, color: color)
+        case "squiggle":
+            getStyle(shape: Rectangle(), shading: shading, color: color)
+        case "oval":
+            getStyle(shape: Capsule(), shading: shading, color: color)
         default:
-            fatalError("Invalid shading: \(card.shading)")
+            fatalError("Invalid shape: \(card.content)")
         }
     }
     

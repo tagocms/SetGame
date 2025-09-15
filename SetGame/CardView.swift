@@ -48,5 +48,5 @@ struct CardView: View {
 }
 
 #Preview {
-    CardView(SetGame<String>.Card(id: "1/filled/red/diamond", numberOfContent: 3, shading: "filled", color: "red", content: "diamond"), for: ShapeSetGame())
+    CardView(SetGame<String>.Card(id: "1/filled/red/diamond", numberOfContent: 3, shading: "striped", color: "purple", content: "diamond"), for: ShapeSetGame())
 }
