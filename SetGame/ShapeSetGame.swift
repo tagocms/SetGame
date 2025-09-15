@@ -92,11 +92,7 @@ class ShapeSetGame: ObservableObject {
     }
     
     func selectCard(_ card: SetGame<String>.Card) {
-        if card.isSelected {
-            setGame.deselectCard(card)
-        } else {
-            setGame.selectCard(card)
-        }
+        setGame.selectCard(card)
     }
     
     func dealCards(_ number: Int) {

@@ -16,15 +16,20 @@ struct ShapeSetGameView: View {
                 shapeSetGame.dealCards(3)
             }
         }
-        ScrollView {
-            cardLayout
-        }
-        .padding()
+        // TODO: Clean max card on board logic
+        .disabled(shapeSetGame.getCardsOnBoard.count == 24)
+        
+        cardLayout
+            .padding()
     }
     
     var cardLayout: some View {
         AspectVGrid(shapeSetGame.getCardsOnBoard, aspectRatio: 2/3) { card in
             CardView(card, for: shapeSetGame)
+                .padding(4)
+                .onTapGesture {
+                    shapeSetGame.selectCard(card)
+                }
         }
     }
     

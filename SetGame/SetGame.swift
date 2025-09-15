@@ -67,16 +67,9 @@ struct SetGame<CardContent: CustomStringConvertible> {
     }
     
     mutating func selectCard(_ card: Card) {
-        if let cardIndex = cardsOnDeck.firstIndex(of: card) {
-            cardsOnDeck[cardIndex].isSelected = true
-            print("Card selected")
-        }
-    }
-    
-    mutating func deselectCard(_ card: Card) {
-        if let cardIndex = cardsOnDeck.firstIndex(of: card) {
-            cardsOnDeck[cardIndex].isSelected = false
-            print("Card deselected")
+        if let cardIndex = cardsOnBoard.firstIndex(of: card) {
+            cardsOnBoard[cardIndex].isSelected.toggle()
+            print("Card selected: \(card)")
         }
     }
     
