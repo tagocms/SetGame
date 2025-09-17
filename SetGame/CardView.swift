@@ -30,13 +30,14 @@ struct CardView: View {
     }
     
     var shapes: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 8) {
             ForEach(0..<card.numberOfContent, id: \.self) { _ in
                 game.getShapeWithShading(card)
+                    .minimumScaleFactor(0.01)
                     .aspectRatio(2/1, contentMode: .fit)
             }
         }
-        .padding()
+        .padding(8)
     }
     
     init(_ card: SetGame<String>.Card, for game: ShapeSetGame, fillColor: Color = .white) {

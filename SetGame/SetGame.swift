@@ -51,29 +51,7 @@ struct SetGame<CardContent> where CardContent: CustomStringConvertible & Equatab
         self.cards = []
         self.score = 0
         
-        for numberOfContent in availableNumberOfContent {
-            for shading in availableShadings {
-                for color in availableColors {
-                    for content in availableContents {
-                        let newCard = Card(
-                            id: "\(numberOfContent)/\(shading)/\(color)/\(content)",
-                            numberOfContent: numberOfContent,
-                            shading: shading,
-                            color: color,
-                            content: content,
-                        )
-                        
-                        cards.append(newCard)
-                    }
-                }
-            }
-        }
-        
-        self.cards.shuffle()
-        
-        for _ in 0..<12 {
-            dealCard()
-        }
+        createAndDealCards()
     }
     
     mutating func selectCard(_ card: Card) {
@@ -105,41 +83,7 @@ struct SetGame<CardContent> where CardContent: CustomStringConvertible & Equatab
     // TODO: Check set logic (there is a bug in the isColorValid)
     mutating func checkSet() throws -> Bool {
         if selectedCardsIndices.count == 3 {
-            let indexZero = selectedCardsIndices[0]
-            let indexOne = selectedCardsIndices[1]
-            let indexTwo = selectedCardsIndices[2]
-            
-            let isContentValid = (
-                (cards[indexZero].content == cards[indexOne].content)
-                && (cards[indexZero].content == cards[indexTwo].content)
-            ) || (
-                (cards[indexZero].content != cards[indexOne].content)
-                && (cards[indexZero].content != cards[indexTwo].content)
-            )
-            let isNumberValid = (
-                (cards[indexZero].numberOfContent == cards[indexOne].numberOfContent)
-                && (cards[indexZero].numberOfContent == cards[indexTwo].numberOfContent)
-            ) || (
-                (cards[indexZero].numberOfContent != cards[indexOne].numberOfContent)
-                && (cards[indexZero].numberOfContent != cards[indexTwo].numberOfContent)
-            )
-            let isColorValid = (
-                (cards[indexZero].color == cards[indexOne].color)
-                && (cards[indexZero].color == cards[indexTwo].color)
-            ) || (
-                (cards[indexZero].color != cards[indexOne].color)
-                && (cards[indexZero].color != cards[indexTwo].color)
-            )
-            let isShadingValid = (
-                (cards[indexZero].shading == cards[indexOne].shading)
-                && (cards[indexZero].shading == cards[indexTwo].shading)
-            ) || (
-                (cards[indexZero].shading != cards[indexOne].shading)
-                && (cards[indexZero].shading != cards[indexTwo].shading)
-            )
-            
-            
-            if isContentValid && isNumberValid && isColorValid && isShadingValid {
+            if isValidSet(for: selectedCardsIndices) {
                 selectedCardsIndices.forEach { cards[$0].cardState = .matched }
                 dealCards(3, takePointsAway: false)
                 score += 3
@@ -155,7 +99,84 @@ struct SetGame<CardContent> where CardContent: CustomStringConvertible & Equatab
         }
     }
     
-    mutating func resetCardSelection() {
+    mutating private func resetCardSelection() {
         cards.indices.forEach { cards[$0].isSelected = false }
+    }
+    
+    mutating private func createCards() {
+        cards = []
+        
+        for numberOfContent in availableNumberOfContent {
+            for shading in availableShadings {
+                for color in availableColors {
+                    for content in availableContents {
+                        let newCard = Card(
+                            id: "\(numberOfContent)/\(shading)/\(color)/\(content)",
+                            numberOfContent: numberOfContent,
+                            shading: shading,
+                            color: color,
+                            content: content,
+                        )
+                        
+                        cards.append(newCard)
+                    }
+                }
+            }
+        }
+    }
+    
+    mutating private func createAndDealCards() {
+        createCards()
+        cards.shuffle()
+        
+        for _ in 0..<12 {
+            dealCard()
+        }
+    }
+    
+    mutating func resetGame() {
+        score = 0
+        createAndDealCards()
+    }
+    
+    private func isValidSet(for indices: [Int]) -> Bool {
+        let indexZero = indices[0]
+        let indexOne = indices[1]
+        let indexTwo = indices[2]
+        
+        let isContentValid = (
+            (cards[indexZero].content == cards[indexOne].content)
+            && (cards[indexZero].content == cards[indexTwo].content)
+        ) || (
+            (cards[indexZero].content != cards[indexOne].content)
+            && (cards[indexZero].content != cards[indexTwo].content)
+            && (cards[indexOne].content != cards[indexTwo].content)
+        )
+        let isNumberValid = (
+            (cards[indexZero].numberOfContent == cards[indexOne].numberOfContent)
+            && (cards[indexZero].numberOfContent == cards[indexTwo].numberOfContent)
+        ) || (
+            (cards[indexZero].numberOfContent != cards[indexOne].numberOfContent)
+            && (cards[indexZero].numberOfContent != cards[indexTwo].numberOfContent)
+            && (cards[indexOne].numberOfContent != cards[indexTwo].numberOfContent)
+        )
+        let isColorValid = (
+            (cards[indexZero].color == cards[indexOne].color)
+            && (cards[indexZero].color == cards[indexTwo].color)
+        ) || (
+            (cards[indexZero].color != cards[indexOne].color)
+            && (cards[indexZero].color != cards[indexTwo].color)
+            && (cards[indexOne].color != cards[indexTwo].color)
+        )
+        let isShadingValid = (
+            (cards[indexZero].shading == cards[indexOne].shading)
+            && (cards[indexZero].shading == cards[indexTwo].shading)
+        ) || (
+            (cards[indexZero].shading != cards[indexOne].shading)
+            && (cards[indexZero].shading != cards[indexTwo].shading)
+            && (cards[indexOne].shading != cards[indexTwo].shading)
+        )
+        
+        return isContentValid && isNumberValid && isColorValid && isShadingValid
     }
 }

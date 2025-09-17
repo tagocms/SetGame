@@ -14,6 +14,7 @@ class ShapeSetGame: ObservableObject {
     
     @Published private var setGame: SetGame<String> = initializeNewGame()
     @Published var matchState: MatchState = .common
+    @Published var showNewGameAlert = false
     
     // MARK: Computed properties
     var getCardsOnDeck: [SetGame<String>.Card] { setGame.cardsOnDeck }
@@ -120,5 +121,9 @@ class ShapeSetGame: ObservableObject {
         } catch {
             print("Invalid number of cards selected have been used to make a set.")
         }
+    }
+    
+    func resetGame() {
+        setGame.resetGame()
     }
 }

@@ -19,6 +19,17 @@ struct ShapeSetGameView: View {
             }
             matchFeedback
         }
+        .onLongPressGesture {
+            shapeSetGame.showNewGameAlert.toggle()
+        }
+        .alert("Begin New Game", isPresented: $shapeSetGame.showNewGameAlert) {
+            Button("No", role: .cancel) { }
+            Button("Yes", role: .destructive) {
+                shapeSetGame.resetGame()
+            }
+        } message: {
+            Text("Would you like to start a New Game?")
+        }
     }
     
     var cardLayout: some View {
