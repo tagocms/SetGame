@@ -8,12 +8,18 @@
 import SwiftUI
 
 class ShapeSetGame: ObservableObject {
+    enum MatchState {
+        case common, matched, unmatched
+    }
+    
     @Published private var setGame: SetGame<String> = initializeNewGame()
+    @Published var matchState: MatchState = .common
     
     // MARK: Computed properties
     var getCardsOnDeck: [SetGame<String>.Card] { setGame.cardsOnDeck }
     var getCardsOnBoard: [SetGame<String>.Card] { setGame.cardsOnBoard }
     var getSelectedCards: [Int] { setGame.selectedCardsIndices }
+    var getScore: Int { setGame.score }
     
     static func initializeNewGame() -> SetGame<String> {
         return SetGame<String>(
@@ -97,9 +103,21 @@ class ShapeSetGame: ObservableObject {
     
     func checkSet() {
         do {
-            try setGame.checkSet()
+            let setResponse = try setGame.checkSet()
+            withAnimation {
+                if setResponse {
+                    matchState = .matched
+                } else {
+                    matchState = .unmatched
+                }
+            }
+                
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                withAnimation {
+                    self.matchState = .common
+                }
+            }
         } catch {
-            //
             print("Invalid number of cards selected have been used to make a set.")
         }
     }

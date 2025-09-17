@@ -11,24 +11,13 @@ struct ShapeSetGameView: View {
     @ObservedObject var shapeSetGame: ShapeSetGame
     
     var body: some View {
-        cardLayout
-            .padding()
-        
-        
-        if shapeSetGame.getSelectedCards.count == 3 {
-            Button("Check Set") {
-                withAnimation {
-                    shapeSetGame.checkSet()
-                }
+        ZStack {
+            VStack {
+                cardLayout
+                    .padding()
+                footer
             }
-        } else {
-            Button("Deal 3 more cards") {
-                withAnimation {
-                    shapeSetGame.dealCards(3)
-                }
-            }
-            // TODO: Clean max card on board logic
-            .disabled(shapeSetGame.getCardsOnBoard.count == 24)
+            matchFeedback
         }
     }
     
@@ -41,7 +30,67 @@ struct ShapeSetGameView: View {
                 .onTapGesture {
                     shapeSetGame.selectCard(card)
                 }
+                .transition(.slide)
         }
+    }
+    
+    @ViewBuilder
+    var footer: some View {
+        if shapeSetGame.getSelectedCards.count == 3 {
+            Button("Check Set") {
+                withAnimation {
+                    shapeSetGame.checkSet()
+                }
+            }
+        } else {
+            Button("Deal 3 more cards") {
+                withAnimation {
+                    shapeSetGame.dealCards(3)
+                }
+            }
+            .disabled(shapeSetGame.getCardsOnBoard.count == 30 || shapeSetGame.getCardsOnDeck.count == 0)
+        }
+        
+        Text("Score: \(shapeSetGame.getScore)")
+            .font(.headline.bold())
+        Text("Cards on Deck: \(shapeSetGame.getCardsOnDeck.count)")
+            .font(.caption)
+    }
+    
+    @ViewBuilder
+    var matchFeedback: some View {
+        Group {
+            switch shapeSetGame.matchState {
+            case .common:
+                EmptyView()
+            case .matched:
+                HStack {
+                    Spacer()
+                    Text("Match!!")
+                    Spacer()
+                }
+                .font(.largeTitle.bold())
+                .foregroundStyle(.white)
+                .padding()
+                .background(.green)
+                .clipShape(.rect(cornerRadius: 12))
+                .padding()
+                
+            case .unmatched:
+                HStack {
+                    Spacer()
+                    Text("Not a Match!!")
+                    Spacer()
+                }
+                .font(.largeTitle.bold())
+                .foregroundStyle(.white)
+                .padding()
+                .background(.red)
+                .clipShape(.rect(cornerRadius: 12))
+                .padding()
+            }
+        }
+        .transition(.scale)
     }
     
     init(_ shapeSetGame: ShapeSetGame) {

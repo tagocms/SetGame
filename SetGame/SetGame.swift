@@ -37,6 +37,7 @@ struct SetGame<CardContent> where CardContent: CustomStringConvertible & Equatab
     private let availableColors: [String]
     private let availableContents: [CardContent]
     private(set) var cards: [Card]
+    private(set) var score: Int
     
     var cardsOnDeck: [Card] { cards.filter { $0.cardState == .onDeck } }
     var cardsOnBoard: [Card] { cards.filter { $0.cardState == .onBoard } }
@@ -48,6 +49,7 @@ struct SetGame<CardContent> where CardContent: CustomStringConvertible & Equatab
         self.availableColors = availableColors
         self.availableContents = availableContents
         self.cards = []
+        self.score = 0
         
         for numberOfContent in availableNumberOfContent {
             for shading in availableShadings {
@@ -76,8 +78,10 @@ struct SetGame<CardContent> where CardContent: CustomStringConvertible & Equatab
     
     mutating func selectCard(_ card: Card) {
         if let cardIndex = cards.firstIndex(of: card) {
-            cards[cardIndex].isSelected.toggle()
-            print("Card selected: \(cards[cardIndex])")
+            if selectedCardsIndices.count < 3 || selectedCardsIndices.contains(cardIndex) {
+                cards[cardIndex].isSelected.toggle()
+                print("Card selected: \(cards[cardIndex])")
+            }
             
         }
     }
@@ -89,14 +93,17 @@ struct SetGame<CardContent> where CardContent: CustomStringConvertible & Equatab
         }
     }
     
-    mutating func dealCards(_ number: Int) {
+    mutating func dealCards(_ number: Int, takePointsAway: Bool = true) {
         for _ in 0..<number {
             dealCard()
+        }
+        if takePointsAway {
+            score -= number
         }
     }
     
     // TODO: Check set logic (there is a bug in the isColorValid)
-    mutating func checkSet() throws {
+    mutating func checkSet() throws -> Bool {
         if selectedCardsIndices.count == 3 {
             let indexZero = selectedCardsIndices[0]
             let indexOne = selectedCardsIndices[1]
@@ -134,10 +141,15 @@ struct SetGame<CardContent> where CardContent: CustomStringConvertible & Equatab
             
             if isContentValid && isNumberValid && isColorValid && isShadingValid {
                 selectedCardsIndices.forEach { cards[$0].cardState = .matched }
-                dealCards(3)
+                dealCards(3, takePointsAway: false)
+                score += 3
+                
+                resetCardSelection()
+                return true
             }
             
             resetCardSelection()
+            return false
         } else {
             throw SetGameError.invalidNumberOfCards
         }
