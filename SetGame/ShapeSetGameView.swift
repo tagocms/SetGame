@@ -11,22 +11,33 @@ struct ShapeSetGameView: View {
     @ObservedObject var shapeSetGame: ShapeSetGame
     
     var body: some View {
-        Button("Deal 3 more cards") {
-            withAnimation {
-                shapeSetGame.dealCards(3)
-            }
-        }
-        // TODO: Clean max card on board logic
-        .disabled(shapeSetGame.getCardsOnBoard.count == 24)
-        
         cardLayout
             .padding()
+        
+        
+        if shapeSetGame.getSelectedCards.count == 3 {
+            Button("Check Set") {
+                withAnimation {
+                    shapeSetGame.checkSet()
+                }
+            }
+        } else {
+            Button("Deal 3 more cards") {
+                withAnimation {
+                    shapeSetGame.dealCards(3)
+                }
+            }
+            // TODO: Clean max card on board logic
+            .disabled(shapeSetGame.getCardsOnBoard.count == 24)
+        }
     }
     
     var cardLayout: some View {
         AspectVGrid(shapeSetGame.getCardsOnBoard, aspectRatio: 2/3) { card in
-            CardView(card, for: shapeSetGame)
-                .padding(4)
+            CardView(card, for: shapeSetGame, fillColor: card.isSelected ? .yellow : .white)
+                .padding(8)
+                .scaleEffect(card.isSelected ? 1.1 : 1)
+                .animation(.default, value: card.isSelected)
                 .onTapGesture {
                     shapeSetGame.selectCard(card)
                 }

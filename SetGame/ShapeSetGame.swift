@@ -11,13 +11,9 @@ class ShapeSetGame: ObservableObject {
     @Published private var setGame: SetGame<String> = initializeNewGame()
     
     // MARK: Computed properties
-    var getCardsOnBoard: [SetGame<String>.Card] {
-        return setGame.cardsOnBoard
-    }
-    
-    var getCardsOnDeck: [SetGame<String>.Card] {
-        return setGame.cardsOnDeck
-    }
+    var getCardsOnDeck: [SetGame<String>.Card] { setGame.cardsOnDeck }
+    var getCardsOnBoard: [SetGame<String>.Card] { setGame.cardsOnBoard }
+    var getSelectedCards: [Int] { setGame.selectedCardsIndices }
     
     static func initializeNewGame() -> SetGame<String> {
         return SetGame<String>(
@@ -48,7 +44,7 @@ class ShapeSetGame: ObservableObject {
                 if num.isMultiple(of: 2) {
                     color
                 } else {
-                    Color.white
+                    Color.clear
                 }
             }
         }
@@ -96,8 +92,15 @@ class ShapeSetGame: ObservableObject {
     }
     
     func dealCards(_ number: Int) {
-        for _ in 0..<number {
-            setGame.dealCard()
+        setGame.dealCards(number)
+    }
+    
+    func checkSet() {
+        do {
+            try setGame.checkSet()
+        } catch {
+            //
+            print("Invalid number of cards selected have been used to make a set.")
         }
     }
 }

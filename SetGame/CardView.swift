@@ -11,18 +11,18 @@ struct CardView: View {
     let card: SetGame<String>.Card
     let game: ShapeSetGame
     let cornerRadius: CGFloat = 12
+    let fillColor: Color
     
     var body: some View {
         ZStack {
             base
             shapes
         }
-        .aspectRatio(2/3, contentMode: .fit)
     }
     
     var base: some View {
         RoundedRectangle(cornerRadius: cornerRadius)
-            .fill(.white)
+            .fill(fillColor)
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .stroke(.black, lineWidth: 2)
@@ -39,9 +39,10 @@ struct CardView: View {
         .padding()
     }
     
-    init(_ card: SetGame<String>.Card, for game: ShapeSetGame) {
+    init(_ card: SetGame<String>.Card, for game: ShapeSetGame, fillColor: Color = .white) {
         self.card = card
         self.game = game
+        self.fillColor = fillColor
     }
     
 }
